@@ -4,10 +4,15 @@ this is a new project for my NEOCP and ESA priority selection script
 Requirements:
 
 ACP Expert and ACP Scheduler https://acpx.dc3.com/
+
 Ascom 6.4SP1 https://ascom-standards.org/
+
 Ascom developer componants https://ascom-standards.org/Downloads/PlatDevComponents.htm
+
 Kepler Orbit Engine https://ascom-standards.org/Downloads/ScriptableComponents.htm
+
 NOVAS-COM V2.11 https://ascom-standards.org/Downloads/ScriptableComponents.htm
+
 Requires an MPC Observatory code https://minorplanetcenter.net/iau/info/Astrometry.html#HowObsCode
 
 Use: 
