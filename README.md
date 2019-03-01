@@ -16,5 +16,7 @@ There are several values that will need to be tailored to your capabilities in t
 
 I'm still working on consolidating all user set parameters in the beginning of the script, there may be several lingering path statements that are hard coded in the body of the script
 
-find_orb directory is one of these. 
+find_orb directory is one of these.  The script is expecting it to be in C:\find_o64\
 You'll need to put your observatory code in for the lines that call fo.exe, you might be able to do this with a lat/long, but I havent dug into the fo.exe code to see if that would work.
+
+Please excuse the haphazard nature of my coding, this has been a work in progress for about 4 months. 
