@@ -1,6 +1,0 @@
-21:11:43 Observation 45 from C82 on 26.868970 Feb 2019 is effectively a duplicate
-21:11:43 Observation 46 from C82 on 26.870710 Feb 2019 is effectively a duplicate
-21:16:12 Observation 45 from C82 on 26.868970 Feb 2019 is effectively a duplicate
-21:16:12 Observation 46 from C82 on 26.870710 Feb 2019 is effectively a duplicate
-21:32:05 Observation 45 from C82 on 26.868970 Feb 2019 is effectively a duplicate
-21:32:05 Observation 46 from C82 on 26.870710 Feb 2019 is effectively a duplicate
