@@ -1,0 +1,547 @@
+     Roving observer file.  This contains "MPC codes" for observers who
+  don't have MPC codes,  mostly satellite observers.  They could be handled
+  using code 247 (Roving Observer),  or using the XXX code (see below for
+  details),  but it can be more convenient if they have their own codes.
+
+     Locations can be in the MPC standard longitude/rho_cos_phi/rho_sin_phi
+  triplet format,  or as lon/lat/altitude.  So far,  MPC has used codes
+  with starting characters 0-9 or A-Z,  followed by two digits.  So I've
+  used three letter codes,  often mixed-case,  ideally giving a hint as
+  to the observatory.  One is not limited to alphanumerics;  note the use
+  of '2.2' and '0.6' for the Mauna Kea 2.2-meter and 0.6-meter scopes.
+  Characters from ASCII 33 = '!' to 126='~' can be used,  for 94^3=830584
+  possible observatory codes.  That should last for a while.
+
+     The '!' in column 5 indicates that the data depart from the usual MPC
+  format.  The observatory name starts in column 48,  rather than column
+  31,  to allow more precision.  It also gives room to specify a non-Earth
+  based observer (see examples below for planets,  MSL,  LCROSS impact
+  point, etc.)  It allows for four-character MPC codes.  Punched-card format
+  astrometry won't support that,  but ADES will,  and some of my software
+  allows one to request (for example) ephemerides from a four-character
+  "MPC code".  I may support such codes by allowing 81-column astrometry,
+  though that would force us to abandon punched cards.
+
+     Longitudes and latitudes are either in decimal degree or deg/min/sec
+  form.  See,  e.g.,  (273) EISCAT for an example of the latter.  East and
+  North are positive.  For West 82.3 degrees,  you could use either -82.3
+  or 277.7 (implied east),  or 2774200. or -821800.
+
+     Altitudes are in meters above the (WGS84) ellipsoid.  The difference
+  between ellipsoidal altitudes and above sea level altitudes can be up
+  to about 100 meters.  Gareth Williams tells me that MPC has been careful
+  about asking people which flavor of altitude they're using.  If they
+  give an ASL elevation,  he corrects it to an ellipsoidal one using the
+  EGM96 model.  Google Earth altitudes are ASL and therefore always
+  corrected;  GPS positions have to be flagged so that MPC can know
+  whether to correct them.
+
+     Any line starting with a space is assumed to be a comment.  Negative
+  longitudes (and those between 180 and 360) are in the Western Hemisphere.
+
+   NOTE that rather than add codes here,  one can use code (247),  the
+   "roving observer",  as described at
+
+   http://www.minorplanetcenter.net/iau/info/RovingObs.html
+
+   _Or_,  one can use code (XXX),  as described at
+
+   http://www.minorplanetcenter.net/iau/info/Astrometry.html#HowObsCode
+
+   For this last,  one uses code XXX,  and inserts a line at the top of the
+   observations such as
+
+   COM Long. 239 18 45 E, Lat. 33 54 11 N, Alt. 100m, Google Earth
+
+   Note that MPC is rather strict about the above format (east longitudes
+   only,  degrees/minutes/seconds).  Find_Orb is more flexible -- you can
+   use any "code",  meaning you can even move existing codes,  and you can
+   use decimal degrees and West longitudes if you wish -- but don't expect
+   MPC to understand what you've done.
+
+   Some artificial satellite observers :
+
+Alm !   5.258        +52.3713         -3.      Almere (satellite observatory)
+AMa !  33.9701       +44.3932         68.7     Andriy Makeyev
+AOO !  30.75564      +46.47778        56.      Astronomical Observatory of Odessa Univ
+Bag !-118.5          +34.              0.      S Hutcheon obs
+Ber ! 138.6333       -34.9639        110       Anthony Beresford, Adelaide, South Australia
+CBa !   6.3785       +52.8344         10       Cees Bassa
+Cro !   4.499947     +52.13878         0       Cronesteyn (Marco Langbroek)
+DBr !-121.702778     +37.113278      282       Derek Breit
+Fet ! -75.6910       +44.6062        100       Kevin Fetter, Brockville, Ontario, Canada
+GRR !  18.5129       -33.94058        10       Greg Roberts, South Africa
+Hol !   8.6558       +49.8822        135       Gerhard Holtkamp, Germany
+IHN ! -81.081444     +41.547806      300       Indian Hill North
+ITE !   8.87444      +46.178771      210       Marco Iten Gaggiole
+Lei !   4.49081      +52.15412         0       Leiden (Marco Langbroek)
+MMc ! 262.1339       +30.1316        918       Mike McCants
+PGa ! -98.2161       +26.24316        36       Paul Gabriel, McAllen, Texas USA 78504-2940
+PWa !  -1.1188       +51.0945        120       Peter Wakelin
+Ran !  12.4545       +41.9683         80       Alberto Rango, Italy
+RPa ! -71.0000       +43.6666        200       Ralph Pass
+ScT !-123.6685       +49.4348         40       Roberts Creek 1 (Scott Tilley)
+SGu !  94.5546       +56.1016        170       Sergey Guryanov
+SOb !  -2.24377      +53.3199         86       Unknown satellite observer
+Tim !  20.01361      +47.18278        10       Andras Timar, Hungary
+Tu1 ! -95.983429     +36.139208      201       Tulsa-1
+Tu2 ! -96.1411       +35.8311        330       Tulsa-2
+Var !   6.6814       +44.5736       1850       Vars,  southern Alps
+VMe !  27.543306     +53.904694      217       Vitaly Mechinsky
+
+M-M !  145111.11     +403655.78       51       M. Mollica, Salerno
+
+   When 2008 TC3 impacted the earth on 7 Oct 2008,  I added the impact point
+   as an "observatory" so I could get impact-centered ephemerides easily.
+   Similarly for the 2014 AA estimated impact coordinates,  100 km above
+   the Atlantic Ocean.
+
+Sud !  33.11952      +20.59777       10        Sudan impact site
+Atl ! -43.2          +12.5       100000        2014 AA impact location
+
+   Bowdoinham,  Maine,  my home town in the northeastern United States,
+   added so I could get topocentric ephemerides readily :
+
+Bow ! -69.9          +44.01         100        Bowdoinham
+
+    The centers of the Sun,  moon,  and planets are treated as 'rovers'.
+    (You'll see below Spirit and Opportunity set up as 'rovers' on Mars,
+    plus one for the point of the LCROSS impact so that I could compute
+    ephems from that viewpoint,  showing the distance dwindling to zero at
+    the time of impact.)
+
+Bar !   0.0000       0.00000   +0.00000    @12 SS Barycenter
+Sun !   0.0000       0.00000   +0.00000    @0  Sun
+Mer !   0.0000       0.00000   +0.00000    @1  Mercury
+Ven !   0.0000       0.00000   +0.00000    @2  Venus
+Mar !   0.0000       0.00000   +0.00000    @4  Mars
+Jup !   0.0000       0.00000   +0.00000    @5  Jupiter
+Sat !   0.0000       0.00000   +0.00000    @6  Saturn
+Ura !   0.0000       0.00000   +0.00000    @7  Uranus
+Nep !   0.0000       0.00000   +0.00000    @8  Neptune
+Plu !   0.0000       0.00000   +0.00000    @9  Pluto
+Lun !   0.0000       0.00000   +0.00000    @10 Luna
+
+MEx !   0.0000       0.00000   +0.00000    @4  Mars Express
+LCO ! 311.75834      -84.56139        10   @10 LCROSS impact site
+
+Met !   7.212778     +51.520802       54       Bernd Brinkmann meteor site
+JSt !   8.32         +52.02          300       Joerg Strunk meteor site
+
+SBo !   8.327722     +47.525778      450       Sandro Boschetti
+
+   TAROT positions from http://tarot.obs-hp.fr/tarot/infos/ :
+
+Tar !   6.92389      +43.75222      1270       TAROT Calern Observatory
+Ta2 ! -70.7322       -29.2608       2347       TAROT La Silla ESO
+
+   There are at least eleven telescopes on Mauna Kea,  all currently lumped
+   as (568).  Some are not very close to the position specified for (568)
+   (see http://arxiv.org/pdf/1106.5835 for an example where the difference
+   matters -- admittedly unusual,  involving a close-in artificial object)
+   and in any case,  it's sometimes convenient for an observatory code to
+   tell you exactly which scope was used.  The following list is from:
+   http://irtfweb.ifa.hawaii.edu/IRrefdata/telescope_ref_data.php,  and/or
+   http://www.ifa.hawaii.edu/mko/coordinates.shtml (same data).
+      I had doubts about these lat/lon/alts,  derived from an aerial survey
+   and in NAD83 datum,  with altitudes in feet (data given in non-metric
+   units always makes me worry) and given to a meaningless precision of
+   about 0.3 millimeters -- those sorts of mistakes usually mean bogus data
+   -- but checks with people who have actually been on Mauna Kea with GPS
+   units have assuaged those worries.
+      Lat/lon/alts in this file are supposed to be on the WGS84 ellipsoid.
+   I just took the NAD83 lat/longs and ignored the difference (about two
+   meters).  I increased altitudes by 26 meters,  the approximate geoid
+   height given by
+
+   https://geographiclib.sourceforge.io/cgi-bin/GeoidEval?input=19.82528+-155.46887&option=Submit
+
+      to convert heights above sea level (or,  equivalently,  above the geoid)
+   to heights above the WGS84 ellipsoid.
+      No altitudes were given for JCMT and CSO.  4190 meters (increased by
+   26 meters) seemed at least roughly in the ballpark of the altitudes for
+   the other telescopes.
+      Note also that the MPC position for (568) corresponds to longitude
+   -155.4722,  lat 19.8262,  4202 meters.  After allowing for roundoff
+   (only five digits on parallaxes!),  this looks like the correct
+   position for IRTF.
+
+        longitude    latitude       height
+      DDDmmss.sssss   DDmmss.sssss       (m)
+0.6 !-1552815.46587  +194917.81149  4212.327   Univ of Hawaii 0.6-m, Mauna Kea
+2.2 !-1552809.96073  +194922.76784  4239.555   Univ of Hawaii 2.2-m, Mauna Kea
+CFH !-1552807.95258  +194930.90648  4230.106   Canada-France-Hawaii Telescope, Mauna Kea (CFHT)
+IRT !-1552819.19564  +194934.38594  4194.067   Infrared Telescope Facility (IRTF)
+UKI !-1552813.17630  +194920.75334  4224.498   UK Infrared Telescope (UKIRT)
+JCM !-1552837.20394  +194922.10741  4216       James Clerke Maxwell Telescope (JCMT)
+CSO !-1552831.78945  +194920.77658  4216       Caltech Submillimeter Observatory (CSO)
+Ke1 !-1552828.98665  +194933.40757  4185.581   Keck 1, Mauna Kea
+Ke2 !-1552827.24268  +194935.61788  4185.581   Keck 2, Mauna Kea
+Sub !-1552833.66719  +194931.81425  4189.001   Subaru, Mauna Kea
+Gem !-1552808.56831  +194925.68521  4239.439   Gemini North, Mauna Kea
+
+      The following five (official) MPC sites have corrected positions,
+   copy/pasted from the above.
+
+266 !-1552833.66719  +194931.81425  4189.001   New Horizons KBO Search-Subaru
+267 !-1552807.95258  +194930.90648  4230.106   New Horizons KBO Search-CFHT
+T09 !-1552833.66719  +194931.81425  4189.001   Mauna Kea-UH/Tholen NEO Follow-Up (Subaru)
+T12 !-1552809.96073  +194922.76784  4239.555   Mauna Kea-UH/Tholen NEO Follow-Up (2.24-m)
+T14 !-1552807.95258  +194930.90648  4230.106   Mauna Kea-UH/Tholen NEO Follow-Up (CFHT)
+
+Ce1 !  -2.566025     +37.982840     1532       Centu1 (J75 scope)
+
+   At one time,  it looked as if there might be some Dawn-based astrometry,
+   with coordinates relative to Ceres.
+Daw !   0.0000       0.00000   +0.00000    @10 Dawn spacecraft
+
+   I found some observations of Phobos transiting the Sun as seen from
+   Spirit and Opportunity,  and wanted to compute ephems from the rovers:
+Spi ! 175.47263      -14.5684          0   @4  Spirit
+Opp ! 354.4734       -01.9462          0   @4  Opportunity
+MSL ! 137.4417       -04.5895          0   @4  MSL (Curiosity)
+
+   Shortly after the Chelyabinsk meteor impacted,  I computed a (_very) rough
+   orbit based on the object coming in ten km above Chelyabinsk at 17.3 km/s
+   from azimuth 97,  alt +18.  The following 'Che' code helped :
+
+Che !  61.42         +55.1528      10000       Chelyabinsk meteor
+
+WT1 !  80.9004       +05.5488          0       WT1190F nominal impact point
+
+LNA ! -45.896527     -22.01097      1000       LNA (Laboratorio Nacional de Astrofisica)
+
+   There has been one radar observation,  of (367943) Duende (2012 DA14),
+   made from the following station.  It's at E 19 13' 33.1", N 69 35' 11.3",
+   altitude 89.16 meters,  in Norway. The formatting should be obvious :
+
+273 !  191333.10     +693511.3        89.16    EISCAT Tromso UHF (32-m)
+
+Jah ! 008.351507     +54.652323       10       Jost Jahn's home observatory
+
+   Coordinates for DSN Stations,  added 2016 Sep 27,  from
+   ftp://ssd.jpl.nasa.gov/pub/eph/planets/stations/dsn.itrf93/dsn.itrf93_geodetic_19sep2016.txt
+   Similar degree/minute/second formatting as with (273) EISCAT above.
+
+        longitude    latitude       height
+      DDDmmss.sssss   DDmmss.sssss       (m)
+d12 ! 2431140.23879  +351759.77350   962.15503 DSS 12 Goldstone Echo 34-meter
+d13 ! 2431219.94762  +351449.79132  1070.44450 DSS 13 Goldstone Venus 34-meter
+d14 ! 2430637.66245  +352533.24313  1001.39054 DSS 14 Goldstone 70-meter
+d15 ! 2430646.09763  +352518.67180   973.21110 DSS 15 Goldstone 34-meter
+d16 ! 2430734.86091  +352029.54181   943.97719 DSS 16 Goldstone 26-meter
+d17 ! 2430735.38070  +352031.83568   936.91591 DSS 17 Goldstone 9-meter
+d23 ! 2430737.69313  +352022.38127   945.35142 DSS 23 Goldstone 11-meter
+d24 ! 2430730.74021  +352023.61408   951.51136 DSS 24 Goldstone 34-meter
+d25 ! 2430728.69246  +352015.40307   959.63401 DSS 25 Goldstone 34-meter
+d26 ! 2430737.14089  +352008.48104   968.69315 DSS 26 Goldstone 34-meter
+d27 ! 2431324.05839  +351417.77841  1052.46882 DSS 27 Goldstone 34-meter
+d28 ! 2431315.99178  +351417.77927  1064.64775 DSS 28 Goldstone 34-meter
+d33 ! 1485859.13040  -352401.74505   684.09999 DSS 33 Canberra 11-meter
+d34 ! 1485855.07192  -352354.52383   692.02036 DSS 34 Canberra 34-meter
+d35 ! 1485853.24074  -352344.86387   694.88925 DSS 35 Canberra 34-meter
+d36 ! 1485842.75932  -352342.36634   685.50534 DSS 36 Canberra 34-meter
+d42 ! 1485852.56264  -352402.42868   674.61529 DSS 42 Canberra 34-meter
+d43 ! 1485852.56232  -352408.72724   688.86727 DSS 43 Tidbinbilla 70-meter
+d45 ! 1485839.66828  -352354.44767   674.34745 DSS 45 Canberra 34-meter
+d46 ! 1485859.09407  -352418.03830   676.81253 DSS 46 Canberra 26-meter
+d49 ! 1481548.65612  -325954.23645   414.81554 DSS 49 Parkes
+d53 ! 3554501.25220  +402538.48625   826.79158 DSS 53 Madrid 11-meter
+d54 ! 3554445.25142  +402532.23806   837.05188 DSS 54 Madrid 34-meter
+d55 ! 3554450.52012  +402527.46526   819.06158 DSS 55 Madrid 34-meter
+d61 ! 3554503.51994  +402543.46101   840.42622 DSS 61 Robledo 34-meter
+d63 ! 3554507.16925  +402552.35510   864.81685 DSS 63 Robledo 70-meter
+d65 ! 3554457.48397  +402537.94289   833.85442 DSS 65 Madrid 34-meter
+d66 ! 3554454.89654  +402547.90955   849.87404 DSS 66 Madrid 26-meter
+
+   The coordinates supplied for these stations by the MPC are
+   given to 10^-6 Earth radius (in latitude/altitude),  which
+   is about six meters.  At least one radar observation is
+   given with a sigma of 0.05 microseconds.  That's a round-trip
+   time;  in 25 nanoseconds,  light travels about 7.5 meters.  So
+   we ought to replace the MPC parallax data with the following
+   lat/lon/alts.  The precision in lat/lon is about 0.3 mm,
+   with room for two more digits (3-micron precision).  Go and
+   try making _that_ insufficient precision,  radar guys!
+
+252 ! 2431219.94762  +351449.79132  1070.44450 Goldstone DSS 13, Fort Irwin
+253 ! 2430637.66245  +352533.24313  1001.39054 Goldstone DSS 14, Fort Irwin
+257 ! 2430728.69246  +352015.40307   959.63401 Goldstone DSS 25, Fort Irwin
+
+   Coordinates for Cerro Tololo and Cerro Pachon telescopes,  from
+   https://arxiv.org/abs/1210.1616 , Table 6.  Note that some positions
+   given here don't match those given by MPC's ObsCodes.html.  In case
+   of disagreement,  I'd think these positions should be trusted.
+
+Blan! -704823.49     -301010.78     2241.4     Blanco 4-m
+S1.5! -704824.44     -301009.42     2241.9     SMARTS 1.5-m
+S1.0! -704821.83     -301007.92     2240.5     SMARTS 1.0-m
+S0.9! -704823.86     -301007.90     2241.4     SMARTS 0.9-m
+C0.6! -704822.63     -301008.60     2240.9     Curtis Schmidt 0.6-m
+UCAC! -704822.82     -301006.95     2241.2     Former UCAC
+CHAS! -704821.65     -301006.97     2240.5     Former CHASE
+RASI! -704825.11     -301008.03     2238       RASICAM
+WHAM! -704812.85     -301005.92     2188       WHAM
+KASI! -704814.39     -301001.84     2182       KASI
+LCOA! -704817.24     -301002.58     2198       LCOGT Stellan-A
+LCOB! -704816.78     -301002.39     2198       LCOGT Stellan-B
+LCOC! -704816.85     -301002.81     2198       LCOGT Stellan-C
+S1.3! -704817.92     -301002.81     2200       SMARTS 1.3-m
+PRO1! -704818.91     -301003.52     2207       PROMPT #1
+PRO2! -704819.56     -301003.49     2207       PROMPT #2
+PRO3! -704818.85     -301003.17     2207       PROMPT #3
+PRO4! -704819.32     -301003.56     2207       PROMPT #4
+PRO5! -704819.16     -301003.16     2207       PROMPT #5
+PRO6! -704818.96     -301003.82     2207       PROMPT #6
+PRO7! -704819.36     -301004.33     2208       PROMPT #7
+GONG! -704819.84     -301003.92     2209       GONG
+SSIA! -704819.56     -301005.28     2212       SSI Airglow
+T80S! -704820.48     -301004.31     2212       T80-South (site)
+SARA! -704757.13     -301019.72     2151       SARA South 0.6-m
+GemS! -704412.06     -301426.67     2748       Gemini South 8.2-m
+SOAR! -704401.11     -301416.41     2738       SOAR 4.1-m
+LSST! -704457.90     -301440.68     2647       LSST 8.4-m (site)
+LSA ! -704451.80     -301441.27     2647       LSST Aux. 1.4-m (site)
+ALO ! -704417.50     -301506.37     2552       Andes LIDAR Obs. (ALO)
+
+War ! 149.1930       -31.2763        552.      Warrumbungle Observatory
+Dub ! 148.58525      -31.29358       300.      Dubbo Observatory
+
+   Coords from http://www.ls.eso.org/sci/facilities/lasilla/telescopes/d1p5/
+   (Danish 1.52-m),
+   http://www.eso.org/sci/facilities/lasilla/telescopes/ntt/overview.html
+   (New Technology Telescope),
+   http://www.eso.org/sci/facilities/lasilla/telescopes/3p6/overview.html
+   (ESO 3.6-m),
+   http://www.eso.org/sci/facilities/lasilla/telescopes/national/2p2.html
+   (ESO/MPG 2.2-m).  MPC lumps these at (809) La Silla
+
+Dan ! -704407.662    -291514.235    2340       Danish Telescope, La Silla
+NTT ! -704401.5      -291532.1      2375       New Technology Telescope, La Silla
+MPG ! -704004.543    -291515.433    2335       Max Planck Gesellschaft, La Silla
+ESO ! -704354.1      -291539.5      2400       ESO 3.6-m, La Silla
+
+   https://www.eso.org/sci/facilities/paranal/astroclimate/site.html gives
+   latitude/longitude for not only each of the four "unit telescopes"
+   making up the VLT;  it also gives lat/longs for the many auxiliary
+   telescopes.  However,  they're all given as being at 2635.43 meters
+   above sea level.  The geoid height is 33.91 meters for UT1 (using
+   EGM96),  resulting in an ellipsoidal height of 2369.34 meters.
+   I'll go with that until we get better data...
+
+UT1 ! -702418.27     -243739.44     2369.34    VLT UT1 (Antu)
+UT2 ! -702417.39     -243737.80     2369.34    VLT UT2 (Kueyen)
+UT3 ! -702416.32     -243736.64     2369.34    VLT UT3 (Melipal)
+UT4 ! -702414.25     -243737.36     2369.34    VLT UT4 (Yepun)
+VST ! -702414.27     -243734.79     2369.34    VLT VST
+VIST! -702351.36     -243656.52     2369.34    VLT VISTA
+CPA0! -702418.44     -243740.59     2369.34    VLT A0
+CPA1! -702418.26     -243741.08     2369.34    VLT A1
+CPB0! -702418.17     -243740.50     2369.34    VLT B0
+CPB1! -702417.99     -243740.99     2369.34    VLT B1
+CPB2! -702417.89     -243741.24     2369.34    VLT B2
+CPB3! -702417.80     -243741.48     2369.34    VLT B3
+CPB4! -702417.71     -243741.73     2369.34    VLT B4
+CPB5! -702417.62     -243741.97     2369.34    VLT B5
+CPC0! -702417.90     -243740.42     2369.34    VLT C0
+CPC1! -702417.72     -243740.91     2369.34    VLT C1
+CPC2! -702417.63     -243741.15     2369.34    VLT C2
+CPC3! -702417.53     -243741.40     2369.34    VLT C3
+CPD0! -702417.36     -243740.25     2369.34    VLT D0
+CPD1! -702416.99     -243741.23     2369.34    VLT D1
+CPD2! -702416.81     -243741.72     2369.34    VLT D2
+CPE0! -702416.83     -243740.08     2369.34    VLT E0
+CPG0! -702416.29     -243739.91     2369.34    VLT G0
+CPG1! -702415.55     -243741.87     2369.34    VLT G1
+CPG2! -702416.57     -243739.18     2369.34    VLT G2
+CPH0! -702415.21     -243739.58     2369.34    VLT H0
+CPI1! -702414.48     -243740.72     2369.34    VLT I1
+CPJ1! -702414.13     -243740.06     2369.34    VLT J1
+CPJ2! -702413.85     -243740.79     2369.34    VLT J2
+CPJ3! -702415.05     -243737.61     2369.34    VLT J3
+CPJ4! -702415.24     -243737.12     2369.34    VLT J4
+CPJ5! -702415.52     -243736.39     2369.34    VLT J5
+CPJ6! -702415.79     -243735.65     2369.34    VLT J6
+CPK0! -702414.14     -243739.24     2369.34    VLT K0
+CPL0! -702413.87     -243739.16     2369.34    VLT L0
+CPM0! -702413.60     -243739.07     2369.34    VLT M0
+
+   Private communication from Peter Birtwhistle. (J95) is at
+   a _geoid_ height (from Google Earth) of 105 metres;  this was
+   misinterpreted as an _ellipsoid_ altitude in the MPC's file.
+   The following will override that mistake,  adding in the
+   47.6-m geoid height for Peter's location.  (MPC has fixed this.
+   But the following coordinates are more precise,  and Peter
+   observes a lot of artsats,  where the added precision matters.)
+J95 ! 358.552997     51.474969       152.6     Great Shefford
+
+   "MPC code" used in Find_Orb's ephemeris code when generating a
+   list of precoveries.
+
+CSS !   0.0000       0.00000   +0.00000        CSS precoveries
+
+   Fixed position for (H01), private communication from Bill Ryan.
+Height above geoid 3250 m, geoid height -23 meters.
+
+H01 !-1071121.6      +335905.4      3227       Magdalena Ridge Observatory, Socorro
+
+   Spacewatch telescope positions are off.  (691) is wrong by
+almost half a kilometer.  I expect a corrected position will
+eventually appear in the MPC list,  but in the meantime,  these
+positions,  measured from Google Maps,  are probably good to
+about ten meters.  The altitudes come from
+
+https://spacewatch.lpl.arizona.edu/telescopes
+
+   with 30 meters subtracted for geoid height.
+
+291 !-111.599905     +31.961669     2045.      LPL/Spacewatch II
+691 !-111.600327     +31.962174     2061.      Steward Observatory, Kitt Peak-Spacewatch
+
+   Other scopes measured while looking at Kitt Peak in Google Maps.
+Google Maps doesn't give me altitudes.  I used the altitude from (691).
+
+Bok !-111.600140     +31.963110     2061.      Bok 2.3-m telescope, Kitt Peak
+May !-111.599895     +31.964027     2061.      Mayall telescope,  Kitt Peak
+1.3 !-111.598406     +31.959634     2061.      1.3-m telescope, Kitt Peak
+2.1 !-111.598296     +31.958175     2061.      2.1-m telescope, Kitt Peak
+WIY !-111.600586     +31.958052     2061.      WIYN telescope, Kitt Peak
+Bur !-111.599203     +31.960597     2061.      Burrell Schmidt, Kitt Peak
+Unk1!-111.598157     +31.960070     2061.      Near visitor center, Kitt Peak
+Unk2!-111.599620     +31.958041     2061.      Unkn 2.1-m 90 meters east of WIYN
+WIY2!-111.600237     +31.958013     2061.      WIYN 0.9-m, Kitt Peak
+
+   From http://kp12m.as.arizona.edu/12m_docs/12_meter_description.htm .
+Again,  I subtracted 30 meters for geoid height.  The odd mismatch in
+precision for latitude and longitude makes me suspect mistakes.
+
+12m !-1113653.475    +315712.0      1884.      ARO 12 Meter Telescope
+
+   The MDM Observatory at Kitt Peak has the 1.3-m McGraw-Hill Telescope and
+the 2.4-m Hiltner Telescope,  separated by roughly 60 meters. The MPC
+coordinates for (697) appear to come from
+http://mdm.kpno.noao.edu/13_manual/mgh03.html , and are given to arcminute
+precision,  about 1.5 km from the positions below. I've measured both scopes
+on Google Maps;  Eric Galayda provided altitudes and IDs as to which scope was
+which (not really apparent otherwise). As with other Kitt Peak scopes, 30
+meters is subtracted from the geoid heights to get ellipsoidal heights.
+
+Hil !-111.615864     +31.951503     1908.5     Kitt Peak, Hiltner
+697 !-111.616685     +31.951754     1895.      Kitt Peak, McGraw-Hill
+
+   Positions for the Jacobus Kapteyn Telescope from Keel et. al :
+   http://iopscience.iop.org/article/10.1088/1538-3873/129/971/015002/pdf
+   (SARA-Cerro Tololo is given above from its original source;  SARA-Kitt Peak
+   corrected via private communication from Bill Keel)
+G82 !-111.599597     +31.960596     2043       SARA Observatory, Kitt Peak
+JKT ! -175241.1      +284540.2      2369       Jacobus Kapteyn Telescope
+
+   Positions for some Haleakala scopes.  Sorting out which was which was done
+   thanks to input from people who have worked there over the decades.  Positions
+   measured from Google Earth.  Altitude for (T05) is from the MPC file and is
+   good to 1e-6 Earth radius = 6.3 meters.  Altitudes for (F65) and (608) are
+   from the same source,  but given to one less digit = 63 meter precision.
+   DKIST alt is from https://dkist.nso.edu/faq,  with a 17 meter geoid height
+   added.  Which puts it pretty high up above everything else.  Everybody else
+   has a 'guessed' altitude of 3050 meters above the ellipsoid.
+DKI !-156.256154     +20.706789     3101       Daniel K. Inouye Solar Telescope (DKIST)
+F65 !-156.257496     +20.707009     3055.001   Faulkes Telescope North
+AMO !-156.256713     +20.708171     3050       AMOS 3.67m satellite surv, Haleakala
+Mee !-156.256575     +20.706542     3050       Mees Solar Telescope,  Haleakala
+2IR !-156.257308     +20.708390     3050       2.5m IR sat surveillance, Haleakala
+T05 !-156.257008     +20.707582     3040.957   ATLAS-HKO, Haleakala
+Geo1!-156.257395     +20.708569     3050       GEODSS #1, Haleakala
+Geo2!-156.257749     +20.708083     3050       GEODSS #2, Haleakala
+Geo3!-156.257440     +20.708078     3050       GEODSS #3, Haleakala
+608 !-156.257768     +20.708536     3040.446   Haleakala-AMOS
+h241!-156.257855     +20.708404     3050       Haleakala 24" #1
+h242!-156.257794     +20.708286     3050       Haleakala 24" #2
+hOld!-156.257659     +20.708291     3050       Dome formerly at Haleakala
+Zod !-156.256624     +20.707240     3050       Zodiacal light, Haleakala
+HAA !-156.257185     +20.707308     3050       Haleakala Amateur Astronomers
+
+   Private communication,  Carlos Jesus Perez Del Pulgar Mancebo,  from
+   Google Maps. Note that (Z82) is a correction of the MPC position;  Carlos
+   gave an altitude of 60 meters above the geoid,  with 49 meters added for
+   geoid height; 370 meters above the geoid for (BO3),  7 meters added.
+
+BO3 ! 169.68363      -45.03816       377       BOOTES-3,  Lauder
+Z82 !  -4.040972     +36.759222      109       BOOTES-2 Observatory, Algarrobo
+
+   Private communication,  2018 Jul 30,  Giorgio Baj: "K38, 008 55 05.654 E,
+   45 52 25.533 N, 0484 m, GPS altitude referred MSL."  Added 47 meters
+   for geoid height.
+
+K38 !   8.9182372    +45.8737592     531       M57 Observatory, Saltrio
+
+TRT !  98.485555     +18.586944     2559       TRT (Thai Robotic Observatory)
+
+   Artsat observers,  from
+   https://github.com/cbassa/sattools/blob/master/data/sites.txt
+
+1111!-104.5614       +38.9478       2073       Ron Lee
+4171!   6.3785       +52.8344         10       Cees Bassa
+4172!   5.2580       +52.3713         -3       Leo Barhorst
+4553!  -2.2330       +53.3210         86       Cees Bassa
+0001! -97.7610       +30.3340        160       Mike McCants
+0002! -97.8661       +30.3138        280       Mike McCants
+0030!  18.9727       +47.4857        400       Ivan Artner
+0031!  18.7366       +47.5612        149       Ivan Artner
+0070!  -0.6003       +53.2233         30       Bob Christy
+0100!  17.9138       +59.4627          0       Sven Grahn
+0110! -96.8906       +32.5408        200       Lyn Kennedy
+0433!  18.5129       -33.9406         10       Greg Roberts
+0434!  27.9288       -26.1030       1646       Ian Roberts
+0435!  18.5101       -33.9369         25       Greg Roberts
+0710!  10.6756       +52.3261         85       Lutz Schindler
+0899! -56.1227       -34.8961         30       Fernando Mederos
+1056!  23.9833       +57.0122          4       Martins Keruss
+1086!  30.7556       +46.4778         56       Nikolay Koshkin
+1244!  33.9701       +44.3932         69       Andriy Makeyev
+1747! -72.3526       +45.7275        191       Daniel Deak
+1775! -75.6910       +44.6062        200       Kevin Fetter
+2018!  -1.1188       +51.0945        124       Peter Wakelin
+2115!  -0.7950       +51.3286         75       Mike Waterman
+2414!  -1.8800       +50.7468         34       David Hopkins
+2420!  -3.1386       +55.9486         40       Russell Eberst
+2563!   2.4043       +51.0524         10       Pierre Nierinck
+2675!  -2.3264       +52.1358         70       David Brierley
+2701! -79.3924       +43.6876        230       Ted Molczan
+2751!  -1.9849       +51.3440        125       Bruce MacDonald
+2756!  -3.1623       +56.0907         25       Andy Kirkham
+4353!   4.4908       +52.1541          0       Marco Langbroek
+4354!   4.5602       +52.1168         -2       Marco Langbroek
+4355!   4.4994       +52.1388         -2       Marco Langbroek
+4541!  12.4531       +41.9639         80       Alberto Rango
+4542!  12.4545       +41.9683         80       Alberto Rango
+4641!  16.9010       +41.1060         70       Alberto Rango
+5555!  94.5533       +56.1019        154       Sergey Guryanov
+5918!  18.1045       +59.2985         40       Bjorn Gimle
+5919!  18.6206       +59.2615         30       Bjorn Gimle
+6226! -97.8194       +28.4861        110       Scott Campbell
+7777!  -2.3267       +38.1656       1608       Brad Young remote
+7778! 149.0644       -31.2733       1122       Brad Young SSO
+7779!-105.5283       +32.9204       2225       Brad Young NM
+8048!-123.6420       +49.4175          1.      Scott Tilley
+8049!-123.6685       +49.4348         40.      Scott Tilley
+8305! -98.2163       +26.2431         30       Paul Gabriel
+8335! -95.9838       +36.1397        205       Brad Young
+8336! -95.9838       +36.1397        205       Brad Young
+8438!-119.7750       +38.8108       1545       Sierra Stars
+8536! -76.5010       +36.8479          4       Tim Luton
+8539! -79.3388       +39.4707        839       Steve Newcomb
+8597! 138.6333       -34.9638        100       Tony Beresford
+8600! 151.6477       -32.9770         18       Paul Camilleri
+0699! 132.2369       -14.4733        108       Paul Camilleri
+8730! -97.7279       +30.3086        150       Ed Cannon
+8739!-121.7028       +37.1133        282       Derek Breit
+9461!  19.89365      +47.9175        938       Konkoly Obs
+9633! -96.9982       +33.0206        153       Jim Nix
+9730! -97.8660       +30.3150        280       Mike McCants
+6242!  -2.8284       +42.9453        623       Jon Mikel
+6241!  -2.8203       +42.9565        619       Jon Mikel
+4160!   5.4768       +51.2793         35       Bram Dorreman
+9998!   6.3961       +52.8119         10       Dwingeloo telescoop
+9999!   5.5151       +47.348         100       Graves
+
+Kwa ! 167.73         +08.72           10       Kwajalein

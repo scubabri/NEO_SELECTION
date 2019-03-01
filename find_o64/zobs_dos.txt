@@ -1,0 +1,12 @@
+COD V01
+CON B. Sheets
+OBS B. Sheets
+MEA B. Sheets
+TEL 360mm Reflector + CCD
+NUM 3
+ACK MPCReport file updated 2019.02.24 20:05:55
+NET Gaia DR2
+             KC2019 02 24.34355 11 16 33.92 +37 20 04.9          18.4 G      V01
+             KC2019 02 24.35102 11 16 30.85 +37 18 57.4          18.2 G      V01
+             KC2019 02 24.35850 11 16 27.86 +37 17 49.2          18.9 G      V01
+----- end -----
