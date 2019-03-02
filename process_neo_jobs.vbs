@@ -3,13 +3,14 @@ Set objShell = CreateObject("WScript.Shell")
 baseDir = "E:\Dropbox\ASTRO\SCRIPTS\NEOCP_AUTO"  										' set your working directory here
 
 Dim Arg, runType, Elements, minscore, mindec, minvmag, minobs, minseen, imageScale, skySeeing, imageOverhead, binning, minHorizon, uncertainty, object, score, ra, dec, vmag, obs, seen, RightAscension, Declination, dJD
-Dim transitJd
+Dim transitJd, minESAPriority
 set Arg = WScript.Arguments
 runType = Arg(0)
 
 ' set your minimums here
-minscore 			= 0					' what is the minumum score from the NEOCP, higher score, more desirable for MPC, used for Scheduler priority as well.
-mindec 				= -10 				' what is the minimum dec you can image at
+minscore 			= 80				' what is the minumum score from the NEOCP, higher score, more desirable for MPC, used for Scheduler priority as well.
+minESAPriority  	= 1
+mindec 				= -10				' what is the minimum dec you can image at
 minvmag 			= 19.5				' what is the dimmest object you can see
 minobs 				= 3					' how many observations, fewer observations mean chance of being lost
 minseen 			= 5					' what is the oldest object from the NEOCP, older objects have a good chance of being lost.
@@ -334,7 +335,7 @@ End Function
 
 Sub GetExposureData(expTime,imageCount, objectRate, Minutes)
 	
-	call getTransitFromAscom(object, transitJd)
+	call getTransitFromAscom(object, Elements, transitJd)
 	call getRateFromFO(object, transitJd, objectRate)
 	expTime = round((60*(imageScale/objectRate)*skySeeing),0)
 	Minutes = round(18/(objectRate/60))
@@ -450,15 +451,19 @@ Function buildObjectDB(object, vmag,  seen, obs, uncertainty, Minutes, transitJd
 	End If
 End Function
 
-Function getTransitFromAscom(object, transitJd)
+Function getTransitFromAscom(object, Elements, transitJd)
 	Dim ObjExec
 	Dim strFromProc
-
-	Set ObjExec = objShell.Exec("cscript //E:jscript MPRiseTranSet.js" + " " + chr(34) + object + chr(34))
+	
+	Set ObjExec = objShell.Exec("cscript //E:jscript MPRiseTranSet.js" + " " + chr(34) + object + chr(34) + " " + chr(34) + Elements + chr(34))
 	Do
 		strFromProc = ObjExec.StdOut.ReadLine()
-		If IsNumeric(strFromProc) Then
-		transitJd = strFromProc
+		If inStr(strFromProc, "South") = 0 Then
+			If IsNumeric(strFromProc) Then
+				Wscript.Echo strFromProc
+				transitJd = strFromProc
+				belowHorizon = 1
+			End If
 		End If
 	Loop While Not ObjExec.Stdout.atEndOfStream
 End Function
