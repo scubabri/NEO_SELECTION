@@ -9,13 +9,15 @@
 var DEGRAD = Math.PI / 180.0;
 var RADDEG = 180.0 / Math.PI;
 var Desig;
-var Util = new ActiveXObject("ACP.Util")
-
+var Elements;
+var Util = new ActiveXObject("ACP.Util");
+var dtj;
 main()
 
 function main()
 {
-	var Desig = WScript.arguments(0)
+	var Desig = WScript.arguments(0);
+	var Elements = WScript.arguments(1);
 	
     var PL = new ActiveXObject("NOVAS.Planet");                     // NOVAS for MP
     var ST = new ActiveXObject("NOVAS.Site");
@@ -28,26 +30,17 @@ function main()
     PL.EarthEphemeris = KE;                                         // Plug in Earth ephemeris GEN
     PL.Type = 1;                                                    // NOVAS: Minor Planet (Passed to Kepler)
     PL.Number = 1;                                                  // Must pass valid number to Kepler, but is ignored
-    
-    var MP = new ActiveXObject("ASCOM.MPCORB");                     // Get elements from MPCORB
-    MP.Open();
-    try {
-        MP.GetElements(Desig);                                      // Look up in database
-    } catch(ex) {
-        WScript.Echo(ex.message);                                   // Oops, not found probably
-        return;
-    }
-    KT.Name = MP.Designation;
-    KT.Epoch = MP.Epoch;                                            // Epoch of osculating elements
-    KT.M = MP.M;                                                    // Mean anomaly
-    KT.n = MP.n;                                                    // Mean daily motion (deg/day)
-    KT.a = MP.a;                                                    // Semimajor axis (AU)
-    KT.e = MP.e;                                                    // Orbital eccentricity
-    KT.Peri = MP.peri;                                              // Arg of perihelion (J2000, deg.)
-    KT.Node = MP.node;                                              // Long. of asc. node (J2000, deg.)
-    KT.Incl = MP.incl;                                              // Inclination (J2000, deg.)
-    MP.Close();                                                     // Release the database
-    MP = null;  	// Release all that memory now!
+
+	KT.Name = Desig;
+	KT.Epoch = PackedToJulian(Elements.substring(20,25));
+	KT.M = Elements.substring(26,36);                  // Mean anomaly
+	KT.Peri = parseFloat(Elements.substring(37, 46));              // Arg of perihelion (J2000, deg.)
+	KT.Node = parseFloat(Elements.substring(48, 57));              // Long. of asc. node (J2000, deg.)
+    KT.Incl = parseFloat(Elements.substring(59, 68));              // Inclination (J2000, deg.)
+	KT.e = parseFloat(Elements.substring(70, 79));                 // Orbital eccentricity
+	KT.n = parseFloat(Elements.substring(80, 91));                 // Mean daily motion (deg/day)
+	KT.a = parseFloat(Elements.substring(92, 103));                // Semimajor axis (AU)
+	
     try {
         var nxtRise = new Date(MPNextRiseSet(PL, ST, true));
         //WScript.Echo(" " + Desig + " rises at " + nxtRise);
@@ -60,7 +53,6 @@ function main()
     }
 }
 
-//
 // NextRiseSet() - Compute next rise or set time
 //
 // H0 = target altitude for rise/set
@@ -106,10 +98,10 @@ function MPNextRiseSet(PL, ST, DoRise)
 	JD = JDMeridian;
 //
 	if (!DoRise) {
-       // WScript.Echo("Transit:  RA = " + Util.Hours_HMS(RA) + ";  Dec = " + Util.Degrees_DMS(Dec));
-       // WScript.Echo(" " + Desig + " transits " + Util.Julian_Date(JDMeridian));
+        //WScript.Echo("Transit:  RA = " + Util.Hours_HMS(RA) + ";  Dec = " + Util.Degrees_DMS(Dec));
+        //WScript.Echo(" " + Desig + " transits " + Util.Julian_Date(JDMeridian));
 		WScript.Echo(JDMeridian);
-       // WScript.Echo(" ");
+        //WScript.Echo(" ");
 	}
 // The test above ensures that the meridian crossing time will be printed out on a line between the rising and setting times.
     DecRad = Dec * DEGRAD;
@@ -143,7 +135,9 @@ function MPNextRiseSet(PL, ST, DoRise)
 	{
       PV = PL.GetTopocentricPosition(JD, ST, false);  //  This is at the meridian at Iteration 1
       RA = PV.RightAscension;  //  units (hours) 
+	  //WScript.Echo(RA);
       Dec = PV.Declination;    //  units (degrees)
+	  //WScript.Echo (Dec);
       DecRad = Dec * DEGRAD;
 	  sinDec = Math.sin(DecRad);
 	  cosDec = Math.cos(DecRad);
@@ -191,4 +185,26 @@ function MPNextRiseSet(PL, ST, DoRise)
         //WScript.Echo("Setting RA = " + Util.Hours_HMS(RA) + ";  Dec = " + Util.Degrees_DMS(Dec) + ";  Azimuth = " + Util.Degrees_DM(az*RADDEG));
     }
     return(Util.Julian_Date(JD));                                   // Local time of rise or set
+}
+
+function PackedToJulian(Packed) {
+	
+    var yr, mo, dy, PCODE, YCODE;
+    PCODE = "123456789ABCDEFGHIJKLMNOPQRSTUV";
+	YCODE = "IJK";
+	
+	yr = parseInt(18 + YCODE.indexOf(Packed.substring(0,1))) * 100;     // Century
+    yr = yr + parseInt(Packed.substring(1,3));                          // Year in century 
+	mo =  parseInt(1 + PCODE.indexOf(Packed.substring(3,4)));			// Month (1-12)
+	dy = parseInt(1 + PCODE.indexOf(Packed.substring(4,5)));			// Day (1-31)
+	
+	DateToJulian(yr, mo, dy, dtj);                   					// UTC Julian Date
+	epochJulianFromPacked = dtj; 	
+	return epochJulianFromPacked;
+}
+
+function DateToJulian(yr, mo, dy) {
+
+    dtj = ((367 * yr) - Math.round((7 * (yr + Math.round((mo + 9) / 12))) / 4) + Math.round((275 * mo) / 9) + dy + 1721073.5);
+	return dtj;
 }
