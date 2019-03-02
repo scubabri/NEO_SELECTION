@@ -19,10 +19,10 @@ CONSOLE_OPTS=500 15 3 1
    ephemeris output options,  in a complicated form;  the maximum residual
    filtered,  in arcseconds (defaults to 2);  and the Gaussian "noise"
    added,  in sigmas,  when running Monte Carlo orbits.
-SETTINGS=N,4,5,132128,2.000000,1.000000
+SETTINGS=N,4,5,40,2.000000,1.000000
 DEFAULTS=N4
-EPHEM_START=+0
-EPHEM_STEPS=1 1s
+EPHEM_START=+2h
+EPHEM_STEPS=30 30m
 REFERENCE=Find_Orb
 EPHEM_LON=W 69.900
 EPHEM_LAT=N 44.010
@@ -256,5 +256,5 @@ COLLISION_ALTITUDE=50000
    and the current not-very-complete translations improved;  please let
    me know if you're interested.
 LANGUAGE=e
-EPHEM_WINDOW=2c 00 00 00 00 00 00 00 01 00 00 00 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 47 02 00 00 1a 01 00 00 49 04 00 00 e3 02 00 00 
-WINDOW_PLACEMENT=2c 00 00 00 00 00 00 00 01 00 00 00 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 4b 02 00 00 d0 00 00 00 46 04 00 00 2d 03 00 00 
+WINDOW_PLACEMENT=2c 00 00 00 00 00 00 00 01 00 00 00 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 63 02 00 00 45 01 00 00 5e 04 00 00 a2 03 00 00 
+EPHEM_WINDOW=2c 00 00 00 00 00 00 00 01 00 00 00 ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff 32 04 00 00 7c 00 00 00 ca 07 00 00 a2 04 00 00 
