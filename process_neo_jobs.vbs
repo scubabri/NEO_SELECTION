@@ -9,20 +9,20 @@ runType = Arg(0)
 
 ' set your minimums here
 minscore 			= 80				' what is the minumum score from the NEOCP, higher score, more desirable for MPC, used for Scheduler priority as well.
-minESAPriority  	= 0
+minESAPriority  	= 0					' doesnt currently work
 mindec 				= -10				' what is the minimum dec you can image at
 minvmag 			= 20				' what is the dimmest object you can see
 minobs 				= 3					' how many observations, fewer observations mean chance of being lost
 minseen 			= 5					' what is the oldest object from the NEOCP, older objects have a good chance of being lost.
-focalLength			= 1643
-pixelSize			= 6.8
+focalLength			= 1643				' reserved for future FOV calculation
+pixelSize			= 6.8				' reserved for future FOV calculation
 imageScale		 	= 1.71				' your imageScale for determining exposure duration for moving objects
-skySeeing 			= 2.8					' your skyseeing in arcsec, used for figuring out max exposure duration for moving objects.
+skySeeing 			= 2.8				' your skyseeing in arcsec, used for figuring out max exposure duration for moving objects.
 imageOverhead 		= 22 				' how much time to download (and calibrate) added to exposure duration to calculate total number of exposures and repoint
 binning 			= 2 				' binning
 minHorizon 			= 30				' minimum altitude that ACP/Scheduler will start imaging
 maxuncertainty 		= 20				' maximum uncertainty in arcmin from scout for attempt 
-getMPCORB 			= True				' do you want the full MPCORB.dat for reference, new NEOCP objects will be appended.
+getMPCORB 			= False				' do you want the full MPCORB.dat for reference, new NEOCP objects will be appended.
 getCOMETS 			= False
 getNEOCP 			= True
 getESAPri	 		= True
@@ -479,19 +479,20 @@ Function getRateFromFO(object, objectRate)
 			If (Mid(line_current,87,3)) > 0 Then
 					
 				alt = Mid(line_current,87,3)
-			
-				If alt < alt_prev Then
-					output = line_prev
+				'Wscript.Echo line_current & " " & Len(alt)
+				
+				If alt < alt_prev Or Len(alt) = 0 Then						
 					exit Do
+				Else 
+					alt_prev = alt
+					line_prev = line_current
 				End If
 			End If
 		End If 
-		alt_prev = alt
-		line_prev = line_current
 	Loop	
-	objectRate = Mid(output, 74,6)
-	transitDate = FormatDateTime(CDate(mid(output, 1,17)),4)
-	'Wscript.Echo transitDate
+	objectRate = Mid(line_prev, 74,6)
+	transitDate = FormatDateTime(CDate(mid(line_prev, 1,17)),4)
+	WScript.Echo(line_prev)
 	Wscript.Echo object & " " & objectRate & " " & transitDate & " " & alt & " " & alt_prev
 	Wscript.Echo " "
 End Function
