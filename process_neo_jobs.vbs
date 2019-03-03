@@ -48,6 +48,7 @@ mpcTmpFile = "C:\find_o64\mpc_fmt.txt"													' this is the output from fin
 obsTmpFile = "C:\find_o64\observations.txt"												' this is from observations from the NEOCP after parsing and filtering NEOCP.txt
 
 mpcorbSaveFile = baseDir+"\MPCORB.dat"													' the raw MPCORB.dat from MPC that we'll append our elements to.
+mpcorbShortFile = baseDir+"\MPCORB-Short.dat"
 												
 fullMpcorbSave = "C:\Program Files (x86)\Common Files\ASCOM\MPCORB\MPCORB.dat"			' this is a copy for ACP should we decide to manually do an object run. 
 fullMpcorbLink = "https://minorplanetcenter.net/iau/MPCORB/MPCORB.DAT"	
@@ -99,11 +100,23 @@ if objFSO.FileExists(neocpTmpFile) then
 end if
 
 if objFSO.FileExists(baseDir+scoutTmpFile) then
+	Wscript.Sleep 5000
 	objFSO.DeleteFile baseDir+scoutTmpFile
 end if
 
+If runType = "Nightly" Then
+	Set objectsFileToRead = objFSO.OpenTextFile(objectsSaveFile,1)
+	body = ""
+	Do Until objectsFileToRead.atEndOfStream
+        body = body & objectsFileToRead.readLine & vbCrLf
+	Loop
+	Call sendMail(body)
+End If 
+
 Set objFSO = Nothing
 Set objectsFileToWrite = Nothing
+
+' Begin functions 
 
 Function clearACPSched()
 	Set Sched = CreateObject("Acp.Util") 
@@ -506,6 +519,26 @@ Function updateACPObjects()
 		set mpccopy = nothing
 		objShell.CurrentDirectory = baseDir
 	End If
+End Function
+
+Function sendMail(body)
+
+	Set MyEmail=CreateObject("CDO.Message")
+
+	MyEmail.Subject="NEO Object list for " & Date
+	MyEmail.From="brians@fl240.com"
+	MyEmail.To="brians@fl240.com"
+	MyEmail.TextBody=body
+	MyEmail.Configuration.Fields.Item ("http://schemas.microsoft.com/cdo/configuration/sendusing")=2
+
+	'SMTP Server  
+	MyEmail.Configuration.Fields.Item ("http://schemas.microsoft.com/cdo/configuration/smtpserver")="172.17.18.25"
+	'SMTP Port
+	MyEmail.Configuration.Fields.Item ("http://schemas.microsoft.com/cdo/configuration/smtpserverport")=25 
+
+	MyEmail.Configuration.Fields.Update
+	MyEmail.Send
+
 End Function
 
 Function Include(file)
