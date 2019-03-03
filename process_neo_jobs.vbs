@@ -3,13 +3,13 @@ Set objShell = CreateObject("WScript.Shell")
 baseDir = "E:\Dropbox\ASTRO\SCRIPTS\NEOCP_AUTO"  										' set your working directory here
 
 Dim Arg, runType, Elements, minscore, mindec, minvmag, minobs, minseen, imageScale, skySeeing, imageOverhead, binning, minHorizon, uncertainty, object, score, ra, dec, vmag, obs, seen, RightAscension, Declination, dJD
-Dim minESAPriority
+Dim minESAPriority, transitDate
 set Arg = WScript.Arguments
 runType = Arg(0)
 
 ' set your minimums here
-minscore 			= 0				' what is the minumum score from the NEOCP, higher score, more desirable for MPC, used for Scheduler priority as well.
-minESAPriority  	= 1
+minscore 			= 80				' what is the minumum score from the NEOCP, higher score, more desirable for MPC, used for Scheduler priority as well.
+minESAPriority  	= 0
 mindec 				= -10				' what is the minimum dec you can image at
 minvmag 			= 20				' what is the dimmest object you can see
 minobs 				= 3					' how many observations, fewer observations mean chance of being lost
@@ -22,7 +22,7 @@ imageOverhead 		= 22 				' how much time to download (and calibrate) added to ex
 binning 			= 2 				' binning
 minHorizon 			= 30				' minimum altitude that ACP/Scheduler will start imaging
 maxuncertainty 		= 20				' maximum uncertainty in arcmin from scout for attempt 
-getMPCORB 			= False				' do you want the full MPCORB.dat for reference, new NEOCP objects will be appended.
+getMPCORB 			= True				' do you want the full MPCORB.dat for reference, new NEOCP objects will be appended.
 getCOMETS 			= False
 getNEOCP 			= True
 getESAPri	 		= True
@@ -81,9 +81,6 @@ End If
 If getNEOCP = True Then
 	call getNEOCPObjects()
 End If 
-
-'if runType = "nightly" Then	
-'End If
 
 if objFSO.FileExists(mpcTmpFile) then												' clean up temporary files
 	objFSO.DeleteFile mpcTmpFile
@@ -384,7 +381,7 @@ Function buildObjectDB(object, vmag,  seen, obs, uncertainty, Minutes)
 		
 		RTML.RequestsC.Add REQ
 		REQ.ID = object        		' This becomes the Plan name for the Request
-		REQ.Description = object + " Score: " + score + " RA: " + Cstr(round(RightAscension,2)) + " DEC: " + Cstr(round(Declination,2)) + " vMag: " + vmag + " #Obs: " + obs + " Last Seen: " + seen  + " Rate: " + CStr(objectRate) + " arcsec/min" + " Unc: " + trim(uncertainty) + " arcsec"
+		REQ.Description = object + " Score: " + score + " " + transitDate + "UT vMag: " + vmag + " #Obs: " + obs + " Last Seen: " + seen  + " Rate: " + CStr(objectRate) + " arcsec/min" + " Unc: " + trim(uncertainty) + " arcsec"
 		
 		Set TGT = CreateObject("DC3.RTML23.Target")
 		TGT.TargetType.OrbitalElements = Elements
@@ -457,27 +454,32 @@ Function getRateFromFO(object, objectRate)
 	
 	objShell.CurrentDirectory = "C:\find_o64"			
 	objShell.Run "fo.exe observations.txt -e ephemeris.txt -C V01",0,True	
-	objShell.CurrentDirectory = "E:\Dropbox\ASTRO\SCRIPTS\NEOCP_AUTO"
+	objShell.CurrentDirectory = basedir
 	
 	Set ephemerisObjFile = objFSO.OpenTextFile(ephemerisFile)
 	
 	Do Until ephemerisObjFile.AtEndOfStream	
-		current = ephemerisObjFile.ReadLine
-	    if IsNumeric(Mid(current,87,3)) Then
-			If (Mid(current,87,3)) > 0 Then
+	
+		line_current = ephemerisObjFile.ReadLine
+		
+	    if IsNumeric(Mid(line_current,87,3)) Then
+			If (Mid(line_current,87,3)) > 0 Then
 					
-				alt2 = alt1
-				alt1 = Mid(current,87,3)
+				alt = Mid(line_current,87,3)
 			
-				If alt1 < alt2 Then
-					output = current
+				If alt < alt_prev Then
+					output = line_prev
 					exit Do
 				End If
 			End If
 		End If 
+		alt_prev = alt
+		line_prev = line_current
 	Loop	
-	objectRate = Mid(output, 74,6)	
-	Wscript.Echo object & " " & objectRate & " " & Mid(output, 1,17) & " " & alt1 & " " & alt2
+	objectRate = Mid(output, 74,6)
+	transitDate = FormatDateTime(CDate(mid(output, 1,17)),4)
+	'Wscript.Echo transitDate
+	Wscript.Echo object & " " & objectRate & " " & transitDate & " " & alt & " " & alt_prev
 	Wscript.Echo " "
 End Function
 
