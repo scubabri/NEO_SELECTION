@@ -9,15 +9,16 @@ runType = Arg(0)
 
 ' set your minimums here
 minscore 			= 80				' what is the minumum score from the NEOCP, higher score, more desirable for MPC, used for Scheduler priority as well.
-minESAPriority  	= 0					' doesnt currently work
+minESAPriority  	= 0					' 0 = UR, 1 = NE, 2 = LP 
 mindec 				= -10				' what is the minimum dec you can image at
 minvmag 			= 20				' what is the dimmest object you can see
 minobs 				= 3					' how many observations, fewer observations mean chance of being lost
 minseen 			= 5					' what is the oldest object from the NEOCP, older objects have a good chance of being lost.
-focalLength			= 1643				' reserved for future FOV calculation
-pixelSize			= 6.8				' reserved for future FOV calculation
-imageScale		 	= 1.71				' your imageScale for determining exposure duration for moving objects
+focalLength			= 1639.5		    ' your focalLength
+pixelSize			= 6.8				' your camera pixel size in microns
 skySeeing 			= 2.8				' your skyseeing in arcsec, used for figuring out max exposure duration for moving objects.
+sensorHeight		= 14.85				' sensor height in mm
+sensorWidth			= 10.26				' sensory width in mm
 imageOverhead 		= 22 				' how much time to download (and calibrate) added to exposure duration to calculate total number of exposures and repoint
 binning 			= 2 				' binning
 minHorizon 			= 30				' minimum altitude that ACP/Scheduler will start imaging
@@ -26,6 +27,10 @@ getMPCORB 			= False				' do you want the full MPCORB.dat for reference, new NEO
 getCOMETS 			= False
 getNEOCP 			= True
 getESAPri	 		= True
+
+imageScale = round(((pixelSize * 206.3) / focalLength) * binning,2)
+fovh = round((135.3 * sensorHeight) / (focalLength * 0.0393701),2)
+fovw = round((135.3 * sensorWidth) / (focalLength * 0.0393701),2)
 
 strScriptFile = Wscript.ScriptFullName 													
 Set objFSO = CreateObject("Scripting.FileSystemObject")
@@ -104,7 +109,7 @@ if objFSO.FileExists(baseDir+scoutTmpFile) then
 	objFSO.DeleteFile baseDir+scoutTmpFile
 end if
 
-If runType = "Nightly" Then
+If runType = "nightly" Then
 	Set objectsFileToRead = objFSO.OpenTextFile(objectsSaveFile,1)
 	body = ""
 	Do Until objectsFileToRead.atEndOfStream
@@ -221,7 +226,7 @@ Function getESAObjects()
 		uncertainty = Mid(strLine, 42,5)
 		
 		If IsNumeric(esaPriority) Then																					' this line cheats to bypass the date on the first line, doesnt cost much... I dont think
-			If (esaPriority <= 0) AND (Csng(dec) >= mindec) AND (Csng(vmag) <= minvmag) AND (Csng(uncertainty) <= maxuncertainty) Then
+			If (Csng(esaPriority) <= minESAPriority) AND (Csng(dec) >= mindec) AND (Csng(vmag) <= minvmag) AND (Csng(uncertainty) <= maxuncertainty) Then
 				wscript.echo object & " " & esaPriority & " " & dec & " " & vmag & " " & uncertainty
 				Set objectsFileToRead = objFSO.OpenTextFile(objectsSaveFile,1)
 		
@@ -492,7 +497,7 @@ Function getRateFromFO(object, objectRate)
 	Loop	
 	objectRate = Mid(line_prev, 74,6)
 	transitDate = FormatDateTime(CDate(mid(line_prev, 1,17)),4)
-	WScript.Echo(line_prev)
+	'WScript.Echo(line_prev)
 	Wscript.Echo object & " " & objectRate & " " & transitDate & " " & alt & " " & alt_prev
 	Wscript.Echo " "
 End Function
